@@ -1,18 +1,33 @@
-#include "charybdis.dtsi"
-#include "split_input_common.dtsi"
-/ {
-    chosen {
-        zmk,kscan = &mock_kscan;
-    };
+/* boards/shields/charybdis/charybdis_dongle.overlay
+   Makes the dongle scan a 5x6 matrix using the same pins as the right half.
+   col-offset = 6 so logical positions map to the right-hand side.
+   SPDX-License-Identifier: MIT
+*/
 
-    mock_kscan: kscan_1 {
-        compatible = "zmk,kscan-mock";
-        columns = <0>;
-        rows = <0>;
-        events = <0>;
-    };
+#include "charybdis.dtsi"
+
+&default_transform {
+    /* make the dongle map to the right-hand columns */
+    col-offset = <6>;
 };
 
-&trackball_listener {
-    status = "okay";
+&kscan0 {
+    compatible = "zmk,kscan-gpio-matrix";
+
+    /* Use the same columns as the right half */
+    col-gpios =
+        <&pro_micro 19 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+        <&pro_micro 20 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+        <&pro_micro 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+        <&pro_micro 6  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+        <&pro_micro 7  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+        <&pro_micro 8  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+
+    /* Use the same 5 rows as the right half */
+    row-gpios =
+        <&pro_micro 21 GPIO_ACTIVE_HIGH>,
+        <&pro_micro 18 GPIO_ACTIVE_HIGH>,
+        <&pro_micro 5  GPIO_ACTIVE_HIGH>,
+        <&pro_micro 4  GPIO_ACTIVE_HIGH>,
+        <&pro_micro 9  GPIO_ACTIVE_HIGH>;
 };
